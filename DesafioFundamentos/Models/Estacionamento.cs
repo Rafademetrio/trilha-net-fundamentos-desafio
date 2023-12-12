@@ -1,3 +1,6 @@
+using System.Reflection.Metadata;
+using System.Text.RegularExpressions;
+
 namespace DesafioFundamentos.Models
 {
     public class Estacionamento
@@ -17,6 +20,33 @@ namespace DesafioFundamentos.Models
             // TODO: Pedir para o usuário digitar uma placa (ReadLine) e adicionar na lista "veiculos"
             // *IMPLEMENTE AQUI*
             Console.WriteLine("Digite a placa do veículo para estacionar:");
+            string carro = Console.ReadLine().ToUpper();
+            try
+            {
+                VerificarPlacar(carro);
+                Console.WriteLine("Placa correta, carro incluido com sucesso. ");
+                veiculos.Add(carro);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Placa inválida, tente novamente. {ex.Message} ");
+            }
+        }
+
+        private bool VerificarPlacar(string placa)
+        {
+            string letrasPlaca = placa.Substring(0,3);
+            string numerosPlaca = placa.Substring(4,4);
+
+            if(Regex.IsMatch(letrasPlaca,@"^[A-Z]+$") && Regex.IsMatch(numerosPlaca,@"^[0-9]+$"))
+            {
+                return true;
+            }else
+            {
+                return false;
+            }
+
+
         }
 
         public void RemoverVeiculo()
