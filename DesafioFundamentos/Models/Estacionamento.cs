@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 
@@ -7,7 +8,7 @@ namespace DesafioFundamentos.Models
     {
         private decimal precoInicial = 0;
         private decimal precoPorHora = 0;
-        private List<string> veiculos = new List<string>();
+        private Dictionary<string, DateTime> veiculos = new Dictionary<string, DateTime>();
 
         public Estacionamento(decimal precoInicial, decimal precoPorHora)
         {
@@ -24,7 +25,7 @@ namespace DesafioFundamentos.Models
             {
                 VerificarPlacar(carro);
                 Console.WriteLine("Placa correta, carro incluido com sucesso. ");
-                veiculos.Add(carro);
+                veiculos.Add(carro, DateTime.Now);
             }
             catch(Exception ex)
             {
@@ -57,7 +58,6 @@ namespace DesafioFundamentos.Models
            try
             {
                 VerificarPlacar(carro);
-                Console.WriteLine("Placa correta, carro incluido com sucesso. ");
                 placa = carro;
             }
             catch(Exception ex)
@@ -67,19 +67,28 @@ namespace DesafioFundamentos.Models
            
 
             // Verifica se o veículo existe
-            if (veiculos.Any(x => x.ToUpper() == placa.ToUpper()))
+            if (veiculos.Any(x => x.Key.ToUpper() == placa.ToUpper()))
             {
                                 
                 //FEITO
-                Console.WriteLine("Digite a quantidade de horas que o veículo permaneceu estacionado:");
-                int.TryParse(Console.ReadLine(), out int horas);
-                decimal valorTotal = precoInicial + (precoPorHora * horas); 
+                //Console.WriteLine("Digite a quantidade de horas que o veículo permaneceu estacionado:");
+                //int.TryParse(Console.ReadLine(), out int horas);
+
+                // FOI RETIRADO O A SOLICITAÇÃO USUARIO, POIS IMPLEMEITEI PARA O SISTEMAS CADASTRAR A HORA DE ENTRADO PUXANDO PELO SISTEMA.
+                // PARA FACILITAR OS TESTES IMPLEMENTEI A COBRANÇA POR SEGUNDOS.
+
+                int.TryParse(veiculos[placa].ToString("ss"), out int horaDeEntrada);
+                int.TryParse(DateTime.Now.ToString("ss"), out int horaDeSaida);
+
+
+                int tempo = horaDeSaida - horaDeEntrada;
+                decimal valorTotal = precoInicial + (precoPorHora * tempo); 
                 
 
-                // TODO: Remover a placa digitada da lista de veículos
-                // *IMPLEMENTE AQUI*
-
-                Console.WriteLine($"O veículo {placa} foi removido e o preço total foi de: R$ {valorTotal}");
+                
+                
+                Console.WriteLine($"O veículo {placa} entrou no estácionamento em {veiculos[placa]}!");
+                Console.WriteLine($"E foi removido o preço total foi de: R$ {valorTotal}");
                 veiculos.Remove(placa);
             }
             else
@@ -95,9 +104,11 @@ namespace DesafioFundamentos.Models
             {
                 Console.WriteLine($"Temos {veiculos.Count} veículos estacionados e são:");
                 //FEITO
-                for(int i=0; i<veiculos.Count; i++)
+                int contador = veiculos.Count;
+                foreach(var veiculo in veiculos)
                 {
-                    Console.WriteLine($"O {i+1}º : {veiculos[i]}");
+                    Console.WriteLine($"{contador+1}º Veiculo placa: {veiculo.Key} - hora de entrada: {veiculo.Value.ToString("HH:mm:ss")}");
+                    contador++;
                 }
             }
             else
